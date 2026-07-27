@@ -1,0 +1,127 @@
+# KNX Agent — Example configuration
+# Copy to config.yaml and fill in your values.
+# Secrets (API keys, passwords) go in .env — never in this file.
+
+home:
+  family_name: "YourFamily"
+  city: "YourCity"
+  country: "Germany"
+  timezone: "Europe/Berlin"
+  latitude: 0.0  # required: replace with the deployment latitude
+  longitude: 0.0  # required: replace with the deployment longitude
+  # door_station_host: "192.0.2.30"  # Mobotix door station IP
+  # door_station_webhook_host: "192.0.2.10"  # local IoT-interface address
+  # door_station_camera: "entrance"  # optional matching Frigate camera id
+  # webhook token loaded from DOOR_STATION_WEBHOOK_TOKEN
+
+models:
+  router:
+    base_url: "https://api.fireworks.ai/inference/v1"
+    api_key_env: "FIREWORKS_API_KEY"
+    model_id: "accounts/fireworks/models/gpt-oss-120b"
+  specialists:
+    base_url: "https://api.fireworks.ai/inference/v1"
+    api_key_env: "FIREWORKS_API_KEY"
+    model_id: "accounts/fireworks/models/minimax-m2p5"
+  reflection:
+    base_url: "https://openrouter.ai/api/v1"
+    api_key_env: "OPENROUTER_API_KEY"
+    model_id: "anthropic/claude-opus-4.6"
+
+matrix:
+  homeserver: "http://localhost:8008"
+  user_id: "@brain:your.homeserver"
+  # password loaded from MATRIX_PASSWORD in .env
+  room_id: "!yourRoomId:your.homeserver"
+
+mqtt:
+  host: "localhost"
+  port: 1883
+  username: "knx-agent"
+  # password loaded from MQTT_PASSWORD
+  tls: false  # require true whenever the broker is not loopback/local
+
+frigate:
+  host: "localhost"
+  port: 5000
+  camera_rooms:
+    entrance: "Entrance"
+    driveway: "Outside"
+  entrance_cameras: ["entrance"]
+
+gira_x1:
+  host: "192.0.2.20"       # example Gira X1 IP
+  # token loaded from GIRA_X1_TOKEN in .env
+  local_ip: "192.0.2.10"   # This machine's IP on the Gira network
+  callback_host: "192.0.2.10"
+  callback_port: 8102
+  # callback token loaded from GIRA_X1_CALLBACK_TOKEN
+  verify_tls: true
+  ca_bundle: ""             # path to the X1 CA/certificate when self-signed
+
+presence:
+  # Backend: "owntracks" (recommended) or "arp" (legacy/deprecated).
+  # See docs/OWNTRACKS.md for the setup guide.
+  backend: "owntracks"
+
+  # ── OwnTracks settings (used when backend == "owntracks") ──
+  # Map "user/device" (the OwnTracks UserID + DeviceID) to a stable internal id.
+  owntracks_tracked_users:
+    "person1/phone": "person1_phone"
+    "person2/phone": "person2_phone"
+  owntracks_topic_prefix: "owntracks"
+  owntracks_home_region: "Home"        # OwnTracks waypoint name for "at home"
+  owntracks_geofence_radius_m: 150     # fallback radius for raw location updates
+  owntracks_stale_timeout_minutes: 30  # mark away if no update within this window
+
+  # ── Legacy ARP settings (used when backend == "arp") ──
+  poll_interval_seconds: 30
+  away_threshold: 3
+  tracked_devices:
+    person1_phone:
+      ip: "192.0.2.41"
+      name: "Person 1"
+    person2_phone:
+      ip: "192.0.2.42"
+      name: "Person 2"
+
+whisper:
+  model: "small"
+  language: "de"
+
+ollama_host: "http://localhost:11434"
+
+mitsubishi_ac:
+  poll_interval: 30
+  units: []
+  # Example:
+  # units:
+  #   - name: "Living Room AC"
+  #     ip: "192.0.2.50"
+  #     room: "Living Room"
+
+caldav:
+  # Optional: CalDAV calendar integration
+  # Leave url empty to disable
+  url: ""
+  username: ""
+  password: ""  # or set CALDAV_PASSWORD in .env
+  calendar_name: ""
+
+# Family profiles — controls trust levels and response styles
+profiles:
+  - key: "admin1"
+    name: "Admin"
+    trust_level: "admin"
+    response_style: "short, no fluff"
+    matrix_ids: ["@admin:your.homeserver"]
+  # - key: "kids"
+  #   name: "Kids"
+  #   trust_level: "limited"
+  #   response_style: "playful, encouraging"
+  #   allowed_tools: ["lights_control", "blinds_control"]
+  #   matrix_ids: ["@kid:your.homeserver"]
+
+# training_data:
+#   enabled: false           # Enable to log LLM interactions for fine-tuning
+#   output_dir: "data/training"  # Directory for routing.jsonl, interactions.jsonl, background.jsonl

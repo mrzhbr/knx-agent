@@ -1,0 +1,144 @@
+# Gitleaks Configuration for KNX Agent
+# https://github.com/gitleaks/gitleaks
+
+# Extend default gitleaks rules (recommended)
+[extend]
+useDefault = true
+
+# =============================================================================
+# Custom Rules for Project-Specific Secrets
+# =============================================================================
+
+# Gira X1 Home Automation Token
+[[rules]]
+id = "gira-x1-token"
+description = "Gira X1 Home Automation Token"
+regex = '''gira[_-]?x1[_-]?token\s*[=:]\s*["']?([a-f0-9]{32,})["']?'''
+tags = ["gira", "iot", "token"]
+
+# Matrix Bot Credentials
+[[rules]]
+id = "matrix-password"
+description = "Matrix Password"
+regex = '''matrix[_-]?password\s*[=:]\s*["']([^"']{8,})["']'''
+tags = ["matrix", "password"]
+
+# Mobotix Camera Password
+[[rules]]
+id = "mobotix-password"
+description = "Mobotix Door Station Password"
+regex = '''mobotix[_-]?password\s*[=:]\s*["']([^"']{8,})["']'''
+tags = ["mobotix", "camera", "password"]
+
+# Fireworks API Key (for LiteLLM)
+[[rules]]
+id = "fireworks-api-key"
+description = "Fireworks AI API Key"
+regex = '''(fireworks[_-]?)?api[_-]?key\s*[=:]\s*["']?([a-zA-Z0-9]{32,})["']?'''
+tags = ["fireworks", "api", "litellm"]
+
+# CalDAV Password
+[[rules]]
+id = "caldav-password"
+description = "CalDAV Calendar Password"
+regex = '''caldav[_-]?password\s*[=:]\s*["']([^"']{8,})["']'''
+tags = ["caldav", "calendar", "password"]
+
+# MQTT Credentials
+[[rules]]
+id = "mqtt-credentials"
+description = "MQTT Password or Token"
+regex = '''mqtt[_-]?(password|token)\s*[=:]\s*["']([^"']{8,})["']'''
+tags = ["mqtt", "iot", "password"]
+
+# Anthropic API Key (specific pattern)
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API Key"
+regex = '''sk-ant-(api|admin)[a-zA-Z0-9_-]{20,}'''
+tags = ["anthropic", "claude", "api"]
+
+# =============================================================================
+# Allowlist - Patterns/files to ignore
+# =============================================================================
+
+[allowlist]
+description = "Global allowlist"
+
+# Ignore generated artifacts and explicitly fake example files only.
+paths = [
+    # Documentation and examples
+    '''\.env\.example$''',
+    '''\.env\.sample$''',
+    '''config\.yaml\.example$''',
+    '''\.gitleaks\.toml$''',
+    '''\.gitleaks-baseline\.json$''',
+
+    # Test fixtures with fake credentials
+    '''tests?\/fixtures?\/''',
+    '''test\/data\/''',
+    # Two deterministic state/timestamp fixtures trigger the generic entropy rule.
+    '''tests\/test_awareness\.py$''',
+
+    # Cache and build artifacts
+    '''\.venv\/''',
+    '''venv\/''',
+    '''__pycache__\/''',
+    '''\.pytest_cache\/''',
+    '''\.mypy_cache\/''',
+    '''\.ruff_cache\/''',
+    '''\.git\/''',
+    '''dist\/''',
+    '''build\/''',
+    '''\.egg-info\/''',
+
+    # Lock files (may contain hashes that look like secrets)
+    '''uv\.lock$''',
+    '''poetry\.lock$''',
+    '''Pipfile\.lock$''',
+]
+
+# Ignore specific patterns (known examples, test values)
+regexes = [
+    # Example/test AWS keys
+    '''AKIAIOSFODNN7EXAMPLE''',
+    '''AKIA[0-9A-Z]{16}EXAMPLE''',
+    '''wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY''',
+
+    # Example tokens
+    '''sk-ant-api03-example[a-zA-Z0-9_-]*''',
+    '''sk-proj-example[a-zA-Z0-9_-]*''',
+    '''sk-or-v1-example[a-zA-Z0-9_-]*''',
+    '''ghp_example[a-zA-Z0-9]*''',
+
+    # Placeholder patterns
+    '''your[_-]?api[_-]?key[_-]?here''',
+    '''your[_-]?token[_-]?here''',
+    '''your[_-]?password[_-]?here''',
+    '''xxx+''',
+    '''XXX+''',
+    '''<password>''',
+    '''<token>''',
+    '''<api_key>''',
+    '''\*\*\*+''',
+
+    # Test values
+    '''test[_-]?password''',
+    '''test[_-]?token''',
+    '''test[_-]?key''',
+    '''fake[_-]?password''',
+    '''fake[_-]?token''',
+    '''fake[_-]?key''',
+    '''mock[_-]?password''',
+    '''mock[_-]?token''',
+    '''mock[_-]?key''',
+    '''dummy[_-]?password''',
+    '''dummy[_-]?token''',
+    '''dummy[_-]?key''',
+]
+
+# Ignore specific commits (after remediation)
+# [[allowlist]]
+# commits = [
+#     "abc123...",
+# ]

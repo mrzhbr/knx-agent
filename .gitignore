@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+
+# Data and deployment-specific household details (never commit)
+data/
+house_topology.yaml
+*.local.md
+secrets/
+
+# Environment & config (real values)
+.env
+config.yaml
+frigate.yml
+MITSUBISHI_AC.md
+
+# IDE
+.vscode/
+.idea/
+
+# Local agent/tool state
+.claude/omo/
+.claude/worktrees/
+.claude/settings.local.json
+.pi-subagents/
+.claude-plugin/
+.serena/
+.mcp.json
+branch-floater.py
+docs/research-audit-decision-log.md
+
+# Test and coverage output
+.coverage
+coverage.xml
+htmlcov/
+
+# macOS
+.DS_Store
+
+# Docker volumes (legacy paths)
+synapse-data/
+mosquitto-data/
