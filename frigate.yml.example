@@ -1,0 +1,41 @@
+# Minimal Frigate example. Copy to frigate.yml and adapt locally.
+# Never commit camera addresses, usernames, passwords, or zone geometry.
+
+mqtt:
+  host: mosquitto
+  port: 1883
+  user: "{FRIGATE_MQTT_USERNAME}"
+  password: "{FRIGATE_MQTT_PASSWORD}"
+  topic_prefix: frigate
+
+# Select the detector supported by your deployment.
+detectors:
+  cpu:
+    type: cpu
+
+# Replace the reserved example address locally.
+go2rtc:
+  streams:
+    entrance:
+      - "rtsp://camera:{FRIGATE_RTSP_PASSWORD}@192.0.2.60/stream"
+
+cameras:
+  entrance:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/entrance
+          roles: [detect]
+    detect:
+      width: 1280
+      height: 720
+      fps: 5
+    objects:
+      track: [person]
+    record:
+      enabled: false
+    snapshots:
+      enabled: true
+      retain:
+        default: 7
+
+version: 0.17-0

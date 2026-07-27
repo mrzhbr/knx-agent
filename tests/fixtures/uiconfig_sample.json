@@ -1,0 +1,441 @@
+{
+  "uid": "cfg-example",
+  "functions": [
+    {
+      "uid": "fn-dimmer-1",
+      "functionType": "de.gira.schema.functions.KNX.Light",
+      "channelType": "de.gira.schema.channels.KNX.Dimmer",
+      "displayName": "Esstisch",
+      "dataPoints": [
+        {
+          "uid": "dp-dimmer-1-on",
+          "name": "OnOff",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-dimmer-1-shift",
+          "name": "Shift",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-dimmer-1-level",
+          "name": "Brightness",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-dimmer-2",
+      "functionType": "de.gira.schema.functions.KNX.Light",
+      "channelType": "de.gira.schema.channels.KNX.Dimmer",
+      "displayName": "Spots Fenster",
+      "dataPoints": [
+        {
+          "uid": "dp-dimmer-2-on",
+          "name": "OnOff",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-dimmer-2-shift",
+          "name": "Shift",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-dimmer-2-level",
+          "name": "Brightness",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-dimmer-3",
+      "functionType": "de.gira.schema.functions.KNX.Light",
+      "channelType": "de.gira.schema.channels.KNX.Dimmer",
+      "displayName": "Spots zu Flur",
+      "dataPoints": [
+        {
+          "uid": "dp-dimmer-3-on",
+          "name": "OnOff",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-dimmer-3-shift",
+          "name": "Shift",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-dimmer-3-level",
+          "name": "Brightness",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-dimmer-4",
+      "functionType": "de.gira.schema.functions.KNX.Light",
+      "channelType": "de.gira.schema.channels.KNX.Dimmer",
+      "displayName": "Wandleuchte",
+      "dataPoints": [
+        {
+          "uid": "dp-dimmer-4-on",
+          "name": "OnOff",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-dimmer-4-shift",
+          "name": "Shift",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-dimmer-4-level",
+          "name": "Brightness",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-blind-1",
+      "functionType": "de.gira.schema.functions.Covering",
+      "channelType": "de.gira.schema.channels.BlindWithPos",
+      "displayName": "Jalousie",
+      "dataPoints": [
+        {
+          "uid": "dp-blind-1-step",
+          "name": "Step-Up-Down",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-blind-1-direction",
+          "name": "Up-Down",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-heating-1",
+      "functionType": "de.gira.schema.functions.KNX.HeatingCooling",
+      "channelType": "de.gira.schema.channels.KNX.HeatingCoolingSwitchable",
+      "displayName": "Heizen",
+      "dataPoints": [
+        {
+          "uid": "dp-heating-1-current",
+          "name": "Current",
+          "canRead": true,
+          "canWrite": false,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-heating-1-setpoint",
+          "name": "Set-Point",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-heating-1-active",
+          "name": "Heating",
+          "canRead": true,
+          "canWrite": false,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-switch-1",
+      "functionType": "de.gira.schema.functions.Switch",
+      "channelType": "de.gira.schema.channels.Switch",
+      "displayName": "Spots \u00fcber Sp\u00fcle",
+      "dataPoints": [
+        {
+          "uid": "dp-switch-1-on",
+          "name": "OnOff",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-alarm-ready-1",
+      "functionType": "de.gira.schema.functions.BinaryStatus",
+      "channelType": "de.gira.schema.channels.Binary",
+      "displayName": "Scharf.Bereit. Hauptteil",
+      "dataPoints": [
+        {
+          "uid": "dp-alarm-ready-1",
+          "name": "Binary",
+          "canRead": true,
+          "canWrite": false,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-alarm-ready-2",
+      "functionType": "de.gira.schema.functions.BinaryStatus",
+      "channelType": "de.gira.schema.channels.Binary",
+      "displayName": "Scharf.Bereit. Zone 2",
+      "dataPoints": [
+        {
+          "uid": "dp-alarm-ready-2",
+          "name": "Binary",
+          "canRead": true,
+          "canWrite": false,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-window-1",
+      "functionType": "de.gira.schema.functions.BinaryStatus",
+      "channelType": "de.gira.schema.channels.Binary",
+      "displayName": "Wohn/Esszimmer",
+      "dataPoints": [
+        {
+          "uid": "dp-window-1",
+          "name": "Binary",
+          "canRead": true,
+          "canWrite": false,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-camera-1",
+      "functionType": "de.gira.schema.functions.Camera",
+      "channelType": "de.gira.schema.channels.Camera",
+      "displayName": "Eingang rechts",
+      "dataPoints": [
+        {
+          "uid": "dp-camera-1",
+          "name": "Camera",
+          "canRead": true,
+          "canWrite": false,
+          "canEvent": false
+        }
+      ],
+      "parameters": [
+        {
+          "set": "camera",
+          "key": "streamUrl",
+          "value": "http://camera:placeholder@192.0.2.60/stream"
+        }
+      ]
+    },
+    {
+      "uid": "fn-trigger-1",
+      "functionType": "de.gira.schema.functions.PressAndHold",
+      "channelType": "de.gira.schema.channels.Trigger",
+      "displayName": "Garten-Szenentaster",
+      "dataPoints": [
+        {
+          "uid": "dp-trigger-1",
+          "name": "Trigger",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-blind-group",
+      "functionType": "de.gira.schema.functions.Covering",
+      "channelType": "de.gira.schema.channels.BlindWithPos",
+      "displayName": "Jalousie alle",
+      "dataPoints": [
+        {
+          "uid": "dp-blind-group-step",
+          "name": "Step-Up-Down",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-blind-group-direction",
+          "name": "Up-Down",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "uid": "fn-dimmer-5",
+      "functionType": "de.gira.schema.functions.KNX.Light",
+      "channelType": "de.gira.schema.channels.KNX.Dimmer",
+      "displayName": "Decke",
+      "dataPoints": [
+        {
+          "uid": "dp-dimmer-5-on",
+          "name": "OnOff",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        },
+        {
+          "uid": "dp-dimmer-5-shift",
+          "name": "Shift",
+          "canRead": false,
+          "canWrite": true,
+          "canEvent": false
+        },
+        {
+          "uid": "dp-dimmer-5-level",
+          "name": "Brightness",
+          "canRead": true,
+          "canWrite": true,
+          "canEvent": true
+        }
+      ],
+      "parameters": []
+    }
+  ],
+  "locations": [
+    {
+      "displayName": "Erdgeschoss",
+      "locationType": "Floor",
+      "functions": [],
+      "locations": [
+        {
+          "displayName": "Esszimmer",
+          "locationType": "Room",
+          "functions": [
+            {
+              "uid": "fn-dimmer-1"
+            },
+            {
+              "uid": "fn-dimmer-2"
+            },
+            {
+              "uid": "fn-dimmer-3"
+            },
+            {
+              "uid": "fn-dimmer-4"
+            },
+            {
+              "uid": "fn-blind-1"
+            },
+            {
+              "uid": "fn-heating-1"
+            }
+          ],
+          "locations": []
+        },
+        {
+          "displayName": "Kueche",
+          "locationType": "Room",
+          "functions": [
+            {
+              "uid": "fn-switch-1"
+            },
+            {
+              "uid": "fn-blind-group"
+            }
+          ],
+          "locations": []
+        }
+      ]
+    },
+    {
+      "displayName": "Eingangsbereich",
+      "locationType": "Floor",
+      "functions": [],
+      "locations": [
+        {
+          "displayName": "Eingangsbereich",
+          "locationType": "Room",
+          "functions": [
+            {
+              "uid": "fn-dimmer-5"
+            }
+          ],
+          "locations": []
+        }
+      ]
+    },
+    {
+      "displayName": "System",
+      "locationType": "Floor",
+      "functions": [],
+      "locations": [
+        {
+          "displayName": "Sicherheit",
+          "locationType": "Room",
+          "functions": [
+            {
+              "uid": "fn-alarm-ready-1"
+            },
+            {
+              "uid": "fn-alarm-ready-2"
+            },
+            {
+              "uid": "fn-window-1"
+            }
+          ],
+          "locations": []
+        },
+        {
+          "displayName": "Kameras",
+          "locationType": "Room",
+          "functions": [
+            {
+              "uid": "fn-camera-1"
+            }
+          ],
+          "locations": []
+        },
+        {
+          "displayName": "Utility",
+          "locationType": "Room",
+          "functions": [
+            {
+              "uid": "fn-trigger-1"
+            }
+          ],
+          "locations": []
+        }
+      ]
+    }
+  ],
+  "trades": []
+}

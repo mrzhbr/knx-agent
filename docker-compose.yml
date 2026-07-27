@@ -1,0 +1,59 @@
+# Supporting services for local development and trusted home deployments.
+# All published ports bind to loopback by default. Use an explicit, reviewed
+# override file when LAN access is required; do not expose these services to WAN.
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0.22
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./data/mosquitto:/mosquitto/data
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./secrets/mosquitto_password_file:/mosquitto/config/password_file:ro
+    ports:
+      - "127.0.0.1:1883:1883"
+    networks: [backend]
+
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:0.17.1
+    platform: linux/arm64
+    restart: unless-stopped
+    shm_size: "1g"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      FRIGATE_RTSP_PASSWORD: "${MOBOTIX_PASSWORD:?set MOBOTIX_PASSWORD}"
+      FRIGATE_MQTT_USERNAME: "${MQTT_USERNAME:?set MQTT_USERNAME}"
+      FRIGATE_MQTT_PASSWORD: "${MQTT_PASSWORD:?set MQTT_PASSWORD}"
+    volumes:
+      - ./frigate.yml:/config/config.yml:ro
+      - ./data/frigate:/media/frigate
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "127.0.0.1:5001:5000"
+      - "127.0.0.1:8554:8554"
+      - "127.0.0.1:8555:8555/tcp"
+      - "127.0.0.1:8555:8555/udp"
+    depends_on:
+      - mosquitto
+    networks: [backend]
+
+  synapse:
+    image: matrixdotorg/synapse:v1.153.0
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./data/synapse:/data
+    environment:
+      SYNAPSE_SERVER_NAME: example.test
+      SYNAPSE_REPORT_STATS: "no"
+    ports:
+      - "127.0.0.1:8008:8008"
+    networks: [backend]
+
+networks:
+  backend:
+    driver: bridge

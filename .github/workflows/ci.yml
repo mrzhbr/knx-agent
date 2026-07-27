@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - run: uv sync --frozen --extra dev
+      - name: Ruff check
+        run: uv run ruff check src/ tests/
+      - name: Ruff format
+        run: uv run ruff format --check src/ tests/
+      - name: Mypy
+        run: uv run mypy src/
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - run: uv sync --frozen --extra dev
+      - name: Pytest with branch coverage
+        run: uv run python -m pytest --cov=src --cov-report=term-missing --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage.xml
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - run: uv sync --frozen --extra dev
+      - name: Audit locked Python environment
+        # Chroma runs embedded only; its vulnerable FastAPI server is never started or exposed.
+        # Remove this scoped exception when upstream publishes a confirmed fix.
+        run: >-
+          uv run python -m pip_audit --skip-editable
+          --ignore-vuln PYSEC-2026-311
+      - name: Scan current tree for secrets
+        run: >-
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.28.0
+          detect --source=/repo --no-git --redact --config=/repo/.gitleaks.toml
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate secure Compose defaults
+        env:
+          MOBOTIX_PASSWORD: placeholder
+          MQTT_USERNAME: knx-agent
+          MQTT_PASSWORD: placeholder
+        run: |
+          mkdir -p secrets
+          touch secrets/mosquitto_password_file frigate.yml
+          docker compose config --quiet
+          ! docker compose config | grep -q 'privileged: true'
+          docker compose config | grep -q '127.0.0.1:1883'

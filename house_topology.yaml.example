@@ -1,0 +1,48 @@
+# Example topology. Copy to house_topology.yaml and adapt it to your home.
+# The real topology is intentionally ignored because room names and adjacency
+# can reveal sensitive household information.
+
+floors:
+  - key: ground_floor
+    display_name: Ground floor
+    level: 0
+  - key: upper_floor
+    display_name: Upper floor
+    level: 1
+
+rooms:
+  living_room:
+    display_name: Living room
+    floor: ground_floor
+    zone: living
+    window_directions: [south]
+    adjacent_to: [terrace]
+    open_to: [kitchen]
+
+  kitchen:
+    display_name: Kitchen
+    floor: ground_floor
+    zone: living
+    window_directions: [east]
+    adjacent_to: []
+    open_to: [living_room]
+
+  terrace:
+    display_name: Terrace
+    floor: ground_floor
+    zone: outdoor
+    window_directions: []
+    adjacent_to: [living_room]
+    open_to: []
+
+  bedroom:
+    display_name: Bedroom
+    floor: upper_floor
+    zone: sleeping
+    window_directions: [west]
+    adjacent_to: []
+    open_to: []
+
+staircases:
+  - connects: [living_room, bedroom]
+    type: indoor
