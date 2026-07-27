@@ -40,8 +40,18 @@ Matrix → authorization → router/supervisor → tools/guardrails → HAL
                                                         └── Calendar
 ```
 
-See [DESIGN.md](DESIGN.md) for details and [THREAT_MODEL.md](THREAT_MODEL.md) for
-security boundaries.
+See [DESIGN.md](DESIGN.md) for implementation details and
+[THREAT_MODEL.md](THREAT_MODEL.md) for security boundaries.
+
+### Architecture paper
+
+The seminar paper [*Design Considerations for Integrating Agentic AI with the
+KNX Building Automation Standard*](paper.pdf) explains the architectural
+rationale: KNX retains independent actuation authority, while agent proposals
+pass through a code-enforced policy boundary and safety-critical action classes
+remain non-autonomous. It is a design rationale rather than a setup guide; its
+longitudinal authority-graduation model also describes future design direction,
+not only completed features.
 
 ## Requirements
 
