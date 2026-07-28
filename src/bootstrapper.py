@@ -32,8 +32,6 @@ from strands.types.exceptions import (  # type: ignore[import-not-found]
 
 from src.core.platform_health import PlatformHealthMonitor
 
-ContextOverflowError = ContextWindowOverflowException
-
 logger = logging.getLogger(__name__)
 
 
@@ -162,9 +160,8 @@ class Bootstrapper:
 
         logger.info("HAL total devices: %d", self.hal.device_count)
 
-        # Seed device knowledge from GiraX1 device registry
-        gira = self.hal.get_platform("gira_x1")
-        if gira is not None:
+        # Seed device knowledge from whichever configured platforms discovered devices.
+        if self.hal.device_count:
             try:
                 await self.memory_layer.procedural.seed_from_devices(self.hal.get_all_devices())
                 logger.info("Device knowledge seeded from HAL devices")
@@ -370,8 +367,10 @@ class Bootstrapper:
 
         # Offline adapters
         _gira = self.hal.get_platform("gira_x1")
+        _knx_ip = self.hal.get_platform("knx_ip")
         self.offline_adapters = {
             "gira": _gira.gira_adapter if _gira and hasattr(_gira, "gira_adapter") else None,
+            "home_control_available": _gira is not None or _knx_ip is not None,
             "schedule": self.schedule_engine,
         }
 
@@ -748,7 +747,7 @@ class Bootstrapper:
 
         try:
             return await invoke_with_retry(agent, augmented_text, label=agent_name)
-        except ContextOverflowError as overflow_error:
+        except ContextWindowOverflowException as overflow_error:
             del overflow_error
             logger.warning(
                 "Context window overflow for %s agent, attempting truncated retry",
@@ -786,7 +785,7 @@ class Bootstrapper:
                 return await invoke_with_retry(
                     agent, truncated_text, label=f"{agent_name}_truncated"
                 )
-            except ContextOverflowError as overflow_error:
+            except ContextWindowOverflowException as overflow_error:
                 del overflow_error
                 logger.error(
                     "Context window overflow persists for %s agent after truncation, "
@@ -824,7 +823,7 @@ class Bootstrapper:
                     return await invoke_with_retry(
                         agent, fallback_text, label=f"{agent_name}_minimal"
                     )
-                except ContextOverflowError as overflow_error:
+                except ContextWindowOverflowException as overflow_error:
                     del overflow_error
                     logger.critical(
                         "Context window overflow even with minimal context for %s agent, "

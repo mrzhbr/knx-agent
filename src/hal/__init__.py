@@ -23,6 +23,7 @@ from .models import (
 )
 from .platform import Platform
 from .platforms.gira_x1 import GiraX1Platform
+from .platforms.knx_ip import KNXIPPlatform  # type: ignore[import-not-found]
 from .protocols import ConfigSource, EnergySource, PresenceQuery, TopologyQuery, WeatherSource
 from .state import StateStore
 
@@ -41,6 +42,7 @@ __all__ = [
     "EnergySource",
     "GiraX1Platform",
     "HAL",
+    "KNXIPPlatform",
     "PresenceQuery",
     "RuleConfig",
     "RuleEngine",

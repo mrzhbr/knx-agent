@@ -1,0 +1,92 @@
+# Authoritative KNX Agent device map — safe example only.
+# Copy to knx_devices.yaml and replace every room, device, and group address.
+# This file defines semantics. An optional ETS project only validates it and may
+# supply a missing DPT; ETS never creates or renames devices.
+
+schema_version: 1
+
+devices:
+  living_ceiling:
+    name: Living-room ceiling
+    room: Living room
+    floor: Ground floor
+    type: dimmable_light
+    addresses:
+      switch: 1/0/1
+      switch_state: 1/1/1
+      brightness: 1/0/2
+      brightness_state: 1/1/2
+    # Standard role DPTs have defaults. Explicit values are useful when checking
+    # the map against ETS and are required for non-standard binary semantics.
+    dpts:
+      switch: "1.001"
+      switch_state: "1.001"
+      brightness: "5.001"
+      brightness_state: "5.001"
+
+  kitchen_light:
+    name: Kitchen light
+    room: Kitchen
+    floor: Ground floor
+    type: light
+    addresses:
+      switch: 1/0/10
+      switch_state: 1/1/10
+
+  living_blind:
+    name: Living-room blind
+    room: Living room
+    floor: Ground floor
+    type: blind
+    addresses:
+      move: 1/0/20
+      move_state: 1/1/20
+      stop: 1/0/21
+      position: 1/0/22
+      position_state: 1/1/22
+
+  living_thermostat:
+    name: Living-room thermostat
+    room: Living room
+    floor: Ground floor
+    type: heating
+    addresses:
+      setpoint: 1/0/30
+      setpoint_state: 1/1/30
+      temperature_state: 1/1/31
+
+  living_temperature:
+    name: Living-room temperature
+    room: Living room
+    floor: Ground floor
+    type: temperature_sensor
+    addresses:
+      temperature_state: 2/0/1
+
+  living_window:
+    name: Living-room window
+    room: Living room
+    floor: Ground floor
+    type: binary_sensor
+    sensor_class: window
+    addresses:
+      value_state: 2/1/1
+    dpts:
+      value_state: "1.019"
+
+  evening_scene:
+    name: Evening
+    room: Living room
+    floor: Ground floor
+    type: scene
+    scene_number: 4
+    addresses:
+      scene: 3/0/1
+
+  ventilation_boost:
+    name: Ventilation boost
+    room: Utility room
+    floor: Ground floor
+    type: trigger
+    addresses:
+      trigger: 3/0/10

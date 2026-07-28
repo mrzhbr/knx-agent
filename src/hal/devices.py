@@ -161,6 +161,7 @@ _DEVICE_TYPE_TO_ADAPTER: dict[DeviceType, type[DeviceAdapter]] = {
     DeviceType.CLIMATE: ClimateAdapter,
     DeviceType.HEATING: ClimateAdapter,
     DeviceType.BINARY_SENSOR: SensorAdapter,
+    DeviceType.TEMPERATURE_SENSOR: SensorAdapter,
     DeviceType.SCENE: DeviceAdapter,
     DeviceType.TRIGGER: DeviceAdapter,
     DeviceType.CAMERA: CameraAdapter,

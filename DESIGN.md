@@ -2,9 +2,10 @@
 
 ## Goals
 
-KNX Agent is a local-first, embodied home-automation agent for Gira X1. It
-provides German natural-language control while keeping device state, camera
-media, embeddings, and household memory on the home server.
+KNX Agent is a local-first, embodied home-automation agent for KNX installations.
+It connects through either a standard KNX/IP interface/router or the Gira X1
+REST API while keeping device state, camera media, embeddings, and household
+memory on the home server.
 
 The project optimizes for:
 
@@ -47,7 +48,7 @@ HAL ── platforms ── protocol adapters ── local devices/services
 - **Guardrails:** request-local provenance, role restrictions, confirmation
   grants, automation restrictions, and tool-call limits.
 - **HAL:** unified device IDs, discovery, state, execution, and rules.
-- **Platforms:** translate vendor concepts to HAL models.
+- **Platforms:** translate native KNX or vendor concepts to HAL models.
 - **Adapters:** own raw HTTP, MQTT, callback, and device protocols.
 - **Memory:** episodic vector memory, semantic graph memory, and procedural
   routines/schedules.
@@ -86,7 +87,10 @@ No local language model is required. Local Ollama is used only for embeddings.
 
 ## State and events
 
-Platforms discover devices and publish `DeviceState` updates into `StateStore`.
+Platforms discover explicitly mapped or vendor-exposed devices and publish
+`DeviceState` updates into `StateStore`. The native KNX/IP platform takes its
+semantic model only from the reviewed device map; an optional ETS project checks
+physical addresses and DPTs without creating devices or writable capabilities.
 StateStore persists the latest values in SQLite and notifies listeners. The HAL
 marks brain-originated actions before protocol callbacks arrive, preserving the
 origin of state changes.

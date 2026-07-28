@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import pytest
+import pytest  # type: ignore[import-not-found]
 from src.agents.offline import try_offline, execute_offline
 
 
@@ -57,6 +57,26 @@ def test_lights_on_extracts_room():
     action, params = result
     assert action == "lights_on"
     assert "wohnzimmer" in params.get("room", "").lower()
+
+
+async def test_offline_device_routing_accepts_any_primary_knx_platform():
+    result = await execute_offline(
+        "lights_on",
+        {"room": "Wohnzimmer"},
+        {"home_control_available": True},
+    )
+
+    assert result == "offline:lights_on:room=Wohnzimmer"
+
+
+async def test_offline_device_routing_reports_missing_primary_platform():
+    result = await execute_offline(
+        "lights_on",
+        {"room": "Wohnzimmer"},
+        {"home_control_available": False},
+    )
+
+    assert result == "KNX-Gerätesteuerung nicht verfügbar."
 
 
 async def test_execute_offline_who_is_home_no_presence():

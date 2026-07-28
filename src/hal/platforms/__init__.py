@@ -10,6 +10,7 @@ from src.hal.platforms.calendar import CalendarPlatform
 from src.hal.platforms.door_station import DoorStationPlatform
 from src.hal.platforms.frigate import FrigatePlatform
 from src.hal.platforms.gira_x1 import GiraX1Platform
+from src.hal.platforms.knx_ip import KNXIPPlatform  # type: ignore[import-not-found]
 from src.hal.platforms.mitsubishi import MitsubishiPlatform
 from src.hal.platforms.presence import PresencePlatform
 from src.hal.platforms.weather import WeatherPlatform
@@ -19,6 +20,7 @@ from src.hal.platforms.weather import WeatherPlatform
 # Order: gira_x1 first (device seeding dependency).
 PLATFORM_REGISTRY: dict[str, type[Platform]] = {
     "gira_x1": GiraX1Platform,
+    "knx_ip": KNXIPPlatform,
     "frigate": FrigatePlatform,
     "presence": PresencePlatform,
     "mitsubishi_ac": MitsubishiPlatform,
@@ -27,4 +29,4 @@ PLATFORM_REGISTRY: dict[str, type[Platform]] = {
     "calendar": CalendarPlatform,
 }
 
-__all__ = ["GiraX1Platform", "PLATFORM_REGISTRY"]
+__all__ = ["GiraX1Platform", "KNXIPPlatform", "PLATFORM_REGISTRY"]

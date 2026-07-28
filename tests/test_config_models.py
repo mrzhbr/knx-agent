@@ -5,7 +5,13 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from src.config import BrainConfig, ModelSlot, ModelSlotConfig, ModelsConfig
+from src.config import (
+    BrainConfig,
+    KNXIPConfig,
+    ModelSlot,
+    ModelSlotConfig,
+    ModelsConfig,
+)
 
 
 # ── Test helpers ────────────────────────────────────────────────────────────
@@ -38,7 +44,7 @@ def _brain(**kwargs) -> BrainConfig:
 def test_brain_config_requires_models():
     """BrainConfig() without models raises ValidationError."""
     with pytest.raises(ValidationError):
-        BrainConfig()
+        BrainConfig.model_validate({})
 
 
 def test_brain_config_with_models():
@@ -112,3 +118,63 @@ def test_model_slot_values():
     assert ModelSlot.ROUTER_TIER == "router_tier"
     assert ModelSlot.SPECIALISTS_TIER == "specialists_tier"
     assert ModelSlot.REFLECTION_TIER == "reflection_tier"
+
+
+# ── KNX/IP configuration ───────────────────────────────────────────────────
+
+
+def test_knx_ip_defaults_are_safe_and_explicit():
+    config = KNXIPConfig()
+
+    assert config.connection_type == "automatic"
+    assert config.gateway_port == 3671
+    assert config.device_map == "knx_devices.yaml"
+    assert not config.secure
+    assert config.rate_limit == 20
+
+
+def test_explicit_tunneling_requires_gateway_ip():
+    with pytest.raises(ValidationError, match="gateway_ip"):
+        KNXIPConfig(connection_type="tunneling")
+
+
+def test_tunneling_accepts_explicit_gateway():
+    config = KNXIPConfig(connection_type="tunneling", gateway_ip="192.0.2.10")
+
+    assert config.gateway_ip == "192.0.2.10"
+
+
+def test_secure_connection_requires_keyfile_path():
+    with pytest.raises(ValidationError, match="secure_keyfile"):
+        KNXIPConfig(secure=True)
+
+
+def test_secure_knx_ip_requires_explicit_transport_mode():
+    with pytest.raises(ValidationError, match="automatic"):
+        KNXIPConfig(
+            secure=True,
+            secure_keyfile="secrets/installation.knxkeys",
+        )
+
+
+def test_knx_ip_rejects_invalid_connection_type():
+    with pytest.raises(ValidationError):
+        KNXIPConfig.model_validate({"connection_type": "usb"})
+
+
+def test_knx_ip_rejects_invalid_numeric_limits():
+    with pytest.raises(ValidationError):
+        KNXIPConfig(gateway_port=0)
+    with pytest.raises(ValidationError):
+        KNXIPConfig(rate_limit=-1)
+    with pytest.raises(ValidationError):
+        KNXIPConfig(initial_read_timeout=0)
+
+
+def test_brain_config_exposes_knx_ip_defaults():
+    assert isinstance(_brain().knx_ip, KNXIPConfig)
+
+
+def test_brain_config_rejects_two_primary_knx_control_platforms():
+    with pytest.raises(ValidationError, match="gira_x1.*knx_ip"):
+        _brain(platforms=["gira_x1", "knx_ip"])

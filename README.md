@@ -3,12 +3,11 @@
 [![CI](https://github.com/mrzhbr/knx-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/mrzhbr/knx-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Local-first, German-language AI home automation for KNX installations. The
-current device-control adapter connects through the Gira X1 REST API; direct,
-vendor-neutral KNX bus access is not yet implemented. KNX Agent combines
-deterministic offline commands, API-hosted reasoning agents, a hardware
-abstraction layer, local memory, Matrix chat, and Frigate presence/security
-events.
+Local-first, German-language AI home automation for KNX installations. Device
+control can connect either through the Gira X1 REST API or directly through a
+standard KNX/IP interface/router using XKNX. KNX Agent combines deterministic
+offline commands, API-hosted reasoning agents, a hardware abstraction layer,
+local memory, Matrix chat, and Frigate presence/security events.
 
 > **Status:** advanced personal project, not a certified alarm or access-control
 > system. Test with your hardware and read the security documentation before use.
@@ -18,7 +17,8 @@ events.
 
 ## Highlights
 
-- HAL/platform/adapter architecture for seven integration domains.
+- Vendor-neutral KNX/IP tunneling/routing plus the existing Gira X1 adapter.
+- HAL/platform/adapter architecture across the integration domains.
 - German text and local Whisper voice input over a private Matrix room.
 - 30+ offline command patterns when model APIs are unavailable.
 - Local episodic, semantic, and procedural memory.
@@ -31,7 +31,7 @@ events.
 
 ```text
 Matrix → authorization → router/supervisor → tools/guardrails → HAL
-                                                        ├── Gira X1
+                                                        ├── KNX/IP or Gira X1
                                                         ├── Frigate
                                                         ├── Presence
                                                         ├── Mitsubishi AC
@@ -57,7 +57,7 @@ not only completed features.
 
 - Python 3.12+
 - [uv](https://docs.astral.sh/uv/)
-- A Gira X1 installation for device control
+- A standard KNX/IP interface/router or a Gira X1 for device control
 - Optional: Docker, Matrix Synapse, Mosquitto, Frigate, Ollama embeddings, and
   whisper.cpp
 
@@ -70,6 +70,8 @@ uv sync --frozen --extra dev
 cp config.yaml.example config.yaml
 cp house_topology.yaml.example house_topology.yaml
 cp frigate.yml.example frigate.yml
+# Native KNX/IP only:
+cp knx_devices.yaml.example knx_devices.yaml
 ```
 
 Create a local `.env` from `.env.example` and set credentials yourself. Do not
@@ -140,6 +142,7 @@ equipment. Keep mechanical keys and vendor-native controls available.
 - [Design](DESIGN.md)
 - [Threat model](THREAT_MODEL.md)
 - [Security policy](SECURITY.md)
+- [Native KNX/IP setup](docs/KNX_IP.md)
 - [OwnTracks setup](docs/OWNTRACKS.md)
 - [Secure remote access](docs/REMOTE_ACCESS.md)
 - [Contributing](CONTRIBUTING.md)

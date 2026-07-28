@@ -5,8 +5,8 @@ try_offline() tests all patterns and returns a (action_type, params) tuple.
 execute_offline() then calls the appropriate adapter directly.
 
 v2 note: There is no ToolRegistry. adapters is a dict[str, Any] injected from
-IntegrationBus at startup, e.g.:
-    {"gira": gira_adapter, "presence": presence_manager}
+IntegrationBus at startup, including primary-platform availability and optional
+presence/scheduling services.
 
 Pattern ordering matters: more specific patterns must come before generic ones.
 """
@@ -22,20 +22,19 @@ logger = logging.getLogger(__name__)
 
 # Pattern: (compiled_regex, action_type, param_extractor)
 # param_extractor is called with the match object and returns a dict of params
-_PATTERNS: list[tuple[re.Pattern, str, "Callable"]] = []
+Extractor = Callable[[re.Match[str]], dict]
+_PATTERNS: list[tuple[re.Pattern[str], str, Extractor]] = []
 
 
-def _register(pattern: str, action_type: str, extractor=None):
-    """Register a regex pattern with an action type."""
-    if extractor is None:
+def _empty_extractor(match: re.Match[str]) -> dict:
+    del match
+    return {}
 
-        def default_extractor(match):
-            del match
-            return {}
 
-        extractor = default_extractor
-
-    _PATTERNS.append((re.compile(pattern, re.IGNORECASE), action_type, extractor))
+def _register(pattern: str, action_type: str, extract: Extractor | None = None) -> None:
+    """Register a trusted module-defined regex pattern with an action type."""
+    resolved_extractor = extract or _empty_extractor
+    _PATTERNS.append((re.compile(pattern, re.IGNORECASE), action_type, resolved_extractor))
 
 
 def _extract_temperature(match: re.Match) -> dict[str, float]:
@@ -293,28 +292,29 @@ async def execute_offline(
     """Execute an offline action by calling the appropriate adapter directly.
 
     adapters dict should contain:
-        "gira": Gira adapter instance (duck-typed)
+        "home_control_available": whether a Gira or native KNX platform is active
         "presence": PresenceManager instance (optional)
     """
     gira = adapters.get("gira")
+    home_control_available = bool(adapters.get("home_control_available", gira is not None))
     presence = adapters.get("presence")
 
     if action_type in ("lights_on", "lights_off", "lights_all_off", "lights_all_on"):
-        if gira is None:
-            return "Gira X1 nicht verfügbar."
+        if not home_control_available:
+            return "KNX-Gerätesteuerung nicht verfügbar."
         room = params.get("room", "")
         return f"offline:{action_type}:room={room}"
 
     elif action_type in ("blinds_up", "blinds_down", "blinds_all_up", "blinds_all_down"):
-        if gira is None:
-            return "Gira X1 nicht verfügbar."
+        if not home_control_available:
+            return "KNX-Gerätesteuerung nicht verfügbar."
         room = params.get("room", "")
         return f"offline:{action_type}:room={room}"
 
     elif action_type == "heating_set":
         temperature = params.get("temperature", 20.0)
-        if gira is None:
-            return "Gira X1 nicht verfügbar."
+        if not home_control_available:
+            return "KNX-Gerätesteuerung nicht verfügbar."
         return f"offline:{action_type}:temperature={temperature}"
 
     elif action_type == "all_off":

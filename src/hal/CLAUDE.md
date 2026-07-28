@@ -1,9 +1,11 @@
 # hal/
 
 ## Purpose
+
 Hardware Abstraction Layer — the central device control and state management system. All device interactions go through HAL. Platforms translate vendor protocols into HAL's unified device model.
 
 ## Key Files
+
 - `hal.py` — `HAL`: add_platform, find_device/find_room/has_room, execute(device_id, command), populate_initial_state, device_count; `rules` attribute (RuleEngine); duck-typed `set_state_store()` injection for platforms that support it
 - `state.py` — `StateStore`: persistent SQLite state cache; on_change listeners; event_history; TTL-based brain-action marking (`_brain_action_marks` dict with 2s window); in-memory `_states` cache with sync `get_state_sync()` for webhook hot path
 - `models.py` — `DeviceId`, `DeviceInfo`, `DeviceState`, `DeviceType` (13 types), `SensorClass` (7 classes)
@@ -13,6 +15,8 @@ Hardware Abstraction Layer — the central device control and state management s
 - `protocols.py` — `ConfigSource`, `EnergySource`, `PresenceQuery`, `TopologyQuery`, `WeatherSource` — dependency-inversion protocols so HAL never imports from `src/core`
 - `platforms/` — Platform implementations:
   - `gira_x1.py` — `GiraX1Platform`: owns GiraX1Adapter + `_device_registry` (private implementation detail, not a public interface); HTTPS webhook server (aiohttp) for value/service callbacks; 5-min polling fallback; table-driven command dispatcher; `set_state_store()` for StateStore injection
+  - `knx_ip.py` — `KNXIPPlatform`: maps explicitly configured KNX devices to HAL; optional ETS validation never changes semantics; typed commands and telegram events through XKNX
+  - `knx_ip_registry.py` / `knx_ip_ets.py` — authoritative mapping parser and supplementary ETS validation
   - `frigate.py` — `FrigatePlatform`: owns FrigateAdapter; exposes get_events()
   - `presence.py` — `PresencePlatform`: owns ARPPresenceAdapter
   - `mitsubishi.py` — `MitsubishiPlatform`: owns MitsubishiACAdapter
@@ -21,6 +25,7 @@ Hardware Abstraction Layer — the central device control and state management s
   - `calendar.py` — `CalendarPlatform`: owns CalDAVAdapter; exposes format_for_prompt()
 
 ## Conventions
+
 - `Platform.start()` / `Platform.stop()` lifecycle is called by HAL
 - `Platform.health_check()` returns bool
 - All tool functions use `_ctx.hal` from ToolContext — never import platforms directly
@@ -29,5 +34,6 @@ Hardware Abstraction Layer — the central device control and state management s
 - Brain-action marking uses TTL (2s window) not discard-on-first-use — handles multi-UID commands like set_brightness
 
 ## Dependencies
+
 - Depends on: `core/` (bus, presence, topology), `integrations/` (adapters)
 - Depended on by: `tools/` (via ToolContext.hal), `background/` (monitor), `bootstrapper.py`

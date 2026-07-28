@@ -41,6 +41,16 @@ mqtt:
   # password loaded from MQTT_PASSWORD
   tls: false  # require true whenever the broker is not loopback/local
 
+# Primary device-control platform: use exactly one of gira_x1 or knx_ip.
+platforms:
+  - gira_x1
+  - frigate
+  - presence
+  - mitsubishi_ac
+  - weather
+  - door_station
+  - calendar
+
 frigate:
   host: "localhost"
   port: 5000
@@ -48,6 +58,25 @@ frigate:
     entrance: "Entrance"
     driveway: "Outside"
   entrance_cameras: ["entrance"]
+
+# Native KNX/IP alternative. Replace gira_x1 with knx_ip in platforms above.
+# Device semantics always come from device_map. The ETS project is optional and
+# validates addresses, links, and DPTs without creating or renaming devices.
+knx_ip:
+  connection_type: automatic  # automatic, tunneling, tunneling_tcp, routing
+  gateway_ip: ""              # required for explicit tunneling modes
+  gateway_port: 3671
+  local_ip: ""
+  individual_address: ""
+  multicast_group: "224.0.23.12"
+  secure: false             # true requires explicit tunneling or routing mode
+  secure_keyfile: ""          # optional ETS .knxkeys export
+  project_file: ""            # optional ETS .knxproj validation source
+  device_map: "knx_devices.yaml"
+  rate_limit: 20
+  initial_read_timeout: 3.0
+  # Keyfile/project passwords are loaded from KNX_KEYFILE_PASSWORD and
+  # KNX_PROJECT_PASSWORD; never place them in this file.
 
 gira_x1:
   host: "192.0.2.20"       # example Gira X1 IP

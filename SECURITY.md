@@ -25,8 +25,11 @@ forwarding is unsupported. MQTT authentication is mandatory, and TLS is required
 outside loopback. Legacy plain-HTTP devices require IoT VLAN isolation and strict
 host firewall rules.
 
-Real configuration, topology, camera streams, runtime databases, and credentials
-must never be committed. Review [THREAT_MODEL.md](THREAT_MODEL.md) and
+Real configuration, topology, KNX device maps, ETS project/keyring exports,
+camera streams, runtime databases, and credentials must never be committed.
+Native KNX/IP should remain on an isolated automation network; use KNX/IP Secure
+and Data Secure where the installation supports them. Review
+[THREAT_MODEL.md](THREAT_MODEL.md) and
 [docs/REMOTE_ACCESS.md](docs/REMOTE_ACCESS.md) before deployment.
 
 ## Known scoped advisory

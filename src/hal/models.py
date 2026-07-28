@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field  # type: ignore[import-not-found]
 
 
 class DeviceType(StrEnum):
@@ -15,6 +15,7 @@ class DeviceType(StrEnum):
     CLIMATE = "climate"
     HEATING = "heating"
     BINARY_SENSOR = "binary_sensor"
+    TEMPERATURE_SENSOR = "temperature_sensor"
     SCENE = "scene"
     TRIGGER = "trigger"
     CAMERA = "camera"

@@ -3,10 +3,10 @@ from __future__ import annotations
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, Self
 
 import yaml
-from pydantic import BaseModel, Field  # type: ignore[import-not-found]
+from pydantic import BaseModel, ConfigDict, Field, model_validator  # type: ignore[import-not-found]
 from pydantic_settings import (  # type: ignore[import-not-found]
     BaseSettings,
     SettingsConfigDict,
@@ -70,6 +70,37 @@ class GiraX1Config(BaseModel):
     callback_token: str = ""
     verify_tls: bool = True
     ca_bundle: str = ""
+
+
+class KNXIPConfig(BaseModel):
+    """Native KNX/IP connection and authoritative device-map settings."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    connection_type: Literal["automatic", "tunneling", "tunneling_tcp", "routing"] = "automatic"
+    gateway_ip: str = ""
+    gateway_port: int = Field(default=3671, ge=1, le=65535)
+    local_ip: str = ""
+    individual_address: str = ""
+    multicast_group: str = "224.0.23.12"
+    secure: bool = False
+    secure_keyfile: str = ""
+    keyfile_password: str = Field(default="", exclude=True, repr=False)
+    project_file: str = ""
+    project_password: str = Field(default="", exclude=True, repr=False)
+    device_map: str = "knx_devices.yaml"
+    rate_limit: int = Field(default=20, ge=0)
+    initial_read_timeout: float = Field(default=3.0, gt=0, le=60)
+
+    @model_validator(mode="after")
+    def validate_connection(self) -> Self:
+        if self.connection_type in {"tunneling", "tunneling_tcp"} and not self.gateway_ip:
+            raise ValueError(f"gateway_ip is required for {self.connection_type}")
+        if self.secure and not self.secure_keyfile:
+            raise ValueError("secure_keyfile is required when KNX/IP Secure is enabled")
+        if self.secure and self.connection_type == "automatic":
+            raise ValueError("KNX/IP Secure requires explicit tunneling or routing, not automatic")
+        return self
 
 
 class TrackedDevice(BaseModel):
@@ -150,6 +181,7 @@ class BrainConfig(BaseModel):
     mqtt: MQTTConfig = Field(default_factory=MQTTConfig)
     frigate: FrigateConfig = Field(default_factory=FrigateConfig)
     gira_x1: GiraX1Config = Field(default_factory=GiraX1Config)
+    knx_ip: KNXIPConfig = Field(default_factory=KNXIPConfig)
     presence: PresenceConfig = Field(default_factory=PresenceConfig)
     whisper: WhisperConfig = Field(default_factory=WhisperConfig)
     ollama_host: str = "http://localhost:11434"
@@ -168,6 +200,13 @@ class BrainConfig(BaseModel):
             "calendar",
         ]
     )
+
+    @model_validator(mode="after")
+    def validate_primary_knx_platform(self) -> Self:
+        selected = set(self.platforms)
+        if {"gira_x1", "knx_ip"} <= selected:
+            raise ValueError("gira_x1 and knx_ip cannot both be selected as control platforms")
+        return self
 
     def resolve_model(self, slot: "ModelSlot") -> "ModelSlotConfig":
         """Return the ModelSlotConfig for the given slot."""
@@ -195,6 +234,8 @@ class EnvSettings(BaseSettings):
     mqtt_password: str = ""
     door_station_webhook_token: str = ""
     gira_x1_callback_token: str = ""
+    knx_keyfile_password: str = ""
+    knx_project_password: str = ""
 
 
 def load_config(config_path: str | Path | None = None) -> BrainConfig:
@@ -226,6 +267,15 @@ def load_config(config_path: str | Path | None = None) -> BrainConfig:
             "See config.yaml.example for a template."
         )
 
+    knx_yaml = yaml_data.get("knx_ip", {})
+    if isinstance(knx_yaml, dict) and {
+        "keyfile_password",
+        "project_password",
+    } & set(knx_yaml):
+        raise RuntimeError(
+            "KNX project and keyfile passwords must be supplied through environment variables"
+        )
+
     config = BrainConfig.model_validate(yaml_data)
 
     # Overlay env vars (secrets never go in config.yaml)
@@ -246,5 +296,30 @@ def load_config(config_path: str | Path | None = None) -> BrainConfig:
         config.home.door_station_webhook_token = env.door_station_webhook_token
     if env.gira_x1_callback_token:
         config.gira_x1.callback_token = env.gira_x1_callback_token
+    if env.knx_keyfile_password:
+        config.knx_ip.keyfile_password = env.knx_keyfile_password
+    if env.knx_project_password:
+        config.knx_ip.project_password = env.knx_project_password
+
+    if "knx_ip" in config.platforms:
+        config_dir = config_path.parent
+        config.knx_ip.device_map = _resolve_config_path(config.knx_ip.device_map, config_dir)
+        if config.knx_ip.project_file:
+            config.knx_ip.project_file = _resolve_config_path(
+                config.knx_ip.project_file, config_dir
+            )
+        if config.knx_ip.secure_keyfile:
+            config.knx_ip.secure_keyfile = _resolve_config_path(
+                config.knx_ip.secure_keyfile, config_dir
+            )
+        if config.knx_ip.secure_keyfile and not config.knx_ip.keyfile_password:
+            raise RuntimeError("KNX_KEYFILE_PASSWORD is required when an ETS keyfile is configured")
 
     return config
+
+
+def _resolve_config_path(value: str, base_dir: Path) -> str:
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = base_dir / path
+    return str(path)

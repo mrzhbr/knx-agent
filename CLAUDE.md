@@ -2,7 +2,7 @@
 
 ## Overview
 
-Local-first embodied AI home automation agent for KNX installations currently connected through the Gira X1 REST API. The agent uses first-person awareness of state changes, detections, and presence events and communicates via Matrix/Synapse in German.
+Local-first embodied AI home automation agent for KNX installations connected through native KNX/IP or the Gira X1 REST API. The agent uses first-person awareness of state changes, detections, and presence events and communicates via Matrix/Synapse in German.
 
 ## Tech Stack
 
@@ -14,6 +14,7 @@ Local-first embodied AI home automation agent for KNX installations currently co
 - aiomqtt — MQTT for Frigate events
 - httpx — async HTTP (Gira X1 REST, Frigate REST, Open-Meteo)
 - aiohttp — HTTPS webhook server (Gira X1 value/service callbacks)
+- XKNX / XKNXProject — native KNX/IP transport and optional ETS validation
 - pydantic / pydantic-settings — config and validation
 - Frigate NVR (Docker) — optional local camera event processing
 - Mosquitto MQTT broker (Docker)
@@ -30,10 +31,10 @@ User → Matrix Bot → Router → Supervisor → Specialist Agents → Tools �
 Three-layer device control:
 
 - **HAL** — multi-platform orchestrator, device lookup, state management
-- **Platforms** (`src/hal/platforms/`) — translate vendor concepts into HAL's unified device model
+- **Platforms** (`src/hal/platforms/`) — translate native KNX and vendor concepts into HAL's unified device model
 - **Adapters** (`src/integrations/`) — raw protocol clients (HTTP, MQTT, WebSocket)
 
-7 platforms: GiraX1, Frigate, Presence, Mitsubishi, Weather, DoorStation, Calendar
+8 platforms: KNX/IP, GiraX1, Frigate, Presence, Mitsubishi, Weather, DoorStation, Calendar
 
 ## Project Structure
 
@@ -42,7 +43,7 @@ src/
 ├── agents/        # Strands agents: supervisor, comfort, security, energy, schedule, router, offline
 ├── tools/         # Thin wrappers over HAL (lights, blinds, alarm, heating, topology, rules, etc.)
 ├── hal/           # Hardware Abstraction Layer: HAL, Platform, StateStore, DeviceAdapter, RuleEngine
-│   └── platforms/ # Platform implementations: gira_x1, frigate, presence, mitsubishi, weather, door_station, calendar
+│   └── platforms/ # Platform implementations: knx_ip, gira_x1, frigate, presence, mitsubishi, weather, door_station, calendar
 ├── integrations/  # Low-level protocol adapters: GiraX1Adapter, FrigateAdapter, WeatherAdapter, etc.
 ├── core/          # Integration bus, events, presence, guardrails, house awareness, topology, profiles
 ├── memory/        # Three-store memory: episodic (ChromaDB), semantic (graph), procedural (SQLite)
@@ -93,7 +94,7 @@ data/              # ChromaDB store + SQLite DB (runtime, not committed)
 - Never send camera images to external APIs — all vision stays local
 - Never run LLMs locally — API only, regex fallback for offline
 - Never let LLM bypass Agent Control guardrails
-- Never expose Gira X1 UIDs to users or LLM prompts
+- Never expose platform-native IDs or KNX group addresses to users or LLM prompts
 
 ## Development
 

@@ -19,7 +19,7 @@ System integrators spend weeks programming automations that clients forget how t
 
 ## The Solution
 
-**KNX Agent** is an AI layer that sits on top of an existing Gira X1 installation and turns it into a conversational, context-aware home.
+**KNX Agent** is an AI layer that sits on top of an existing KNX installation—through standard KNX/IP or a Gira X1—and turns it into a conversational, context-aware home.
 
 Residents talk to their house in natural language — via text or voice message — and the house responds, acts, and learns.
 
@@ -93,12 +93,12 @@ Residents create schedules in natural language ("Mach morgen um 7 die Heizung an
      ┌────────┘   │   └────────┐
      ▼            ▼            ▼
 ┌─────────┐ ┌─────────┐ ┌──────────┐
-│ Gira X1 │ │ Frigate  │ │ Other    │
-│ (KNX)   │ │ (NVR)   │ │ Systems  │
+│ KNX/IP  │ │ Frigate  │ │ Other    │
+│ or X1   │ │ (NVR)   │ │ Systems  │
 └─────────┘ └─────────┘ └──────────┘
 ```
 
-- **Non-invasive.** KNX Agent connects to the Gira X1 via its existing REST API. No rewiring, no firmware changes, no KNX reprogramming.
+- **Non-invasive.** KNX Agent connects through a standard KNX/IP interface/router or the Gira X1 REST API. No rewiring, firmware changes, or KNX reprogramming is required.
 - **Additive.** All existing automations, switches, and apps continue to work. KNX Agent is an additional interface, not a replacement.
 - **Local-first.** The AI brain runs on a compact local server (mini PC or equivalent). Camera feeds, presence data, and device state never leave the premises. Only LLM inference calls go to the cloud — no images, no recordings.
 - **Works with what's there.** Integrates with Frigate NVR for cameras, Mitsubishi AC units, CalDAV calendars, weather services, and standard MQTT devices.
@@ -133,7 +133,7 @@ Residents create schedules in natural language ("Mach morgen um 7 die Heizung an
 
 | Component | Requirement |
 |-----------|-------------|
-| **Gira X1** | Existing installation with REST API access |
+| **KNX connection** | Standard KNX/IP interface/router or Gira X1 REST access |
 | **Local Server** | Mini PC (e.g. AMD Ryzen, Intel NUC, or Apple Silicon), 16GB+ RAM |
 | **Camera System** | Frigate NVR (optional, for presence + security) |
 | **Chat Interface** | Matrix/Synapse (self-hosted, included in deployment) |
@@ -154,7 +154,7 @@ Residents create schedules in natural language ("Mach morgen um 7 die Heizung an
 ### What stays the same
 
 - KNX programming and device commissioning remain unchanged
-- Gira X1 project configuration is untouched
+- ETS and optional Gira X1 project configuration remain untouched
 - All physical controls, wall switches, and existing apps continue to work
 - You retain full control over the electrical installation
 
@@ -168,7 +168,7 @@ Residents create schedules in natural language ("Mach morgen um 7 die Heizung an
 
 ## Current Capabilities at a Glance
 
-- Multi-room device discovery and control through Gira X1
+- Multi-room device control through native KNX/IP or Gira X1
 - Integrations for cameras, AC, weather, calendars, presence, and MQTT
 - Natural language control in German (text + voice)
 - Three-layer memory (learns preferences, detects patterns, tracks state)
@@ -184,6 +184,6 @@ Residents create schedules in natural language ("Mach morgen um 7 die Heizung an
 
 **Interested in a live demo or pilot installation?**
 
-KNX Agent is ready for deployment on real Gira X1 systems. We're looking for integration partners who want to offer the next generation of intelligent living to their clients.
+KNX Agent supports native KNX/IP and Gira X1 deployments. Native KNX/IP is currently awaiting broader physical-gateway validation.
 
 Let's talk.
