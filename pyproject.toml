@@ -43,7 +43,7 @@ dev = [
     "pytest-asyncio>=0.24",
     "pytest-cov>=6.0",
     "pip-audit>=2.9",
-    "ruff==0.15.10",
+    "ruff==0.16.7",
     "mypy==1.19.1",
     "types-PyYAML>=6.0",
     "types-croniter>=1.3",
